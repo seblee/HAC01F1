@@ -1,0 +1,49 @@
+/*********************************************************
+  Copyright (C), 2014, Alivi Co., Ltd.
+  File name:      	core_proc.c
+  Author: Alair	Version: 0.7       Date:  2020-07-08
+  Description:    	Main entry, system threads initialization
+  Others:         	n.a
+  Function List:  	water_level_sts_get(void)
+                    calc_conductivity(void);
+										calc_humcurrent(void);
+  Variable List:  	n.a
+  Revision History:         
+  Date:           Author:          Modification:
+	2020-07-08      Alair         file create
+*********************************************************/
+#include "cmsis_os.h"  
+#include "adc.h"
+#include "dac.h"
+#include <math.h>
+#include "daq.h"
+#include "dio.h"
+#include "eev.h"
+#include "pid.h"
+#include "global_var.h"
+#include "eev_proc.h"
+#include "sys_conf.h"
+
+
+
+/*********************************************************
+  * @name   eev_proc
+	* @brief  Sample water quality, humidifier current and water level signals
+	* @calls  adc_init()
+            calc_conductivity()
+            calc_humcurrent()
+						water_level_sts_get()
+						osDelay()            
+  * @called main()
+  * @param  *argument : versatile pointer, not used
+  * @retval None
+*********************************************************/
+void core_proc(void const *argument)
+{
+	extern sys_reg_st g_sys;
+	while(1)
+	{		
+
+		osDelay(EEV_PROC_DLY);
+	}
+}
