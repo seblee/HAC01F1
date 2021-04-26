@@ -6,14 +6,13 @@
   Others:         	n.a
   Function List:  	n.a
   Variable List:  	n.a
-  Revision History:         
+  Revision History:
   Date:           Author:          Modification:
-	2014-12-05      gongping         file create
+    2014-12-05      gongping         file create
 *********************************************************/
 
-
-#include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
-#include "threads.h" 
+#include "cmsis_os.h"  // ARM::CMSIS:RTOS:Keil RTX
+#include "threads.h"
 #include "sys_conf.h"
 #include "dio.h"
 #include "i2c_bsp.h"
@@ -33,39 +32,37 @@ osThreadDef(bkg_proc, osPriorityNormal, 1, 0);
 
 /*********************************************************
   * @name   main
-	* @brief  Main function, global initialization and user thread creation
-	* @calls  g_var_init()
+    * @brief  Main function, global initialization and user thread creation
+    * @calls  g_var_init()
             osThreadCreate()
-						osDelay()            
+                        osDelay()
   * @called main()
   * @param  None
   * @retval None
 *********************************************************/
-int main(void)   
-{   
-	hw_drivers_init();			//³õÊ¼»¯²¿·Ö
-	sys_global_var_init();
-//	eev1_timerInit(g_sys.config.general.excSpeed);			//@EEV1
-//	osDelay(10); 
-//	eev2_timerInit(g_sys.config.general.excSpeed);			//@EEV2
-	tid_daq = osThreadCreate(osThread(core_proc), NULL);					//data aquization process initialization
-  tid_com = osThreadCreate(osThread(com_proc), NULL);					//communication process initialization
-	tid_bkg = osThreadCreate(osThread(bkg_proc), NULL);					//background process initialization
-	osDelay(osWaitForever); 	
-	while(1)
-	{;}			
+int main(void)
+{
+    hw_drivers_init();  //åˆå§‹åŒ–éƒ¨åˆ†
+    sys_global_var_init();
+    // eev1_timerInit(g_sys.config.general.excSpeed);  //@EEV1
+    // osDelay(10);
+    // eev2_timerInit(g_sys.config.general.excSpeed);        //@EEV2
+    tid_daq = osThreadCreate(osThread(core_proc), NULL);  // data aquization process initialization
+    tid_com = osThreadCreate(osThread(com_proc), NULL);   // communication process initialization
+    tid_bkg = osThreadCreate(osThread(bkg_proc), NULL);   // background process initialization
+    osDelay(osWaitForever);
+    while (1)
+    {
+        ;
+    }
 }
 
 static void hw_drivers_init(void)
 {
-//	eev_init();			//µç×ÓÅòÕÍ·§
- 	drv_dio_init();	//
-	drv_adc_dma_init();	//Á½Â·Ñ¹Á¦ºÍNTC
-	drv_i2c_init();		//AT24C256 Ä£ÄâIIC³õÊ¼»¯
-	// ·ç»úµ÷ËÙ¿ØÖÆÄ£¿é³õÊ¼»¯
-	InitFanCtrl();
+    //	eev_init();			//ç”µå­è†¨èƒ€é˜€
+    drv_dio_init();      //
+    drv_adc_dma_init();  //ä¸¤è·¯å‹åŠ›å’ŒNTC
+    drv_i2c_init();      // AT24C256 æ¨¡æ‹ŸIICåˆå§‹åŒ–
+    // é£æœºè°ƒé€Ÿæ§åˆ¶æ¨¡å—åˆå§‹åŒ–
+    InitFanCtrl();
 }
-
-
-
-

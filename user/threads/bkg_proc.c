@@ -1,4 +1,4 @@
-#include "cmsis_os.h"  
+#include "cmsis_os.h"
 #include "stm32f0xx.h"
 #include "led.h"
 #include "pid.h"
@@ -10,79 +10,79 @@
 #include "fanctrl.h"
 /*********************************************************
   * @name   bkg_proc
-	* @brief  system background threads, only toggle led in this program.
-	* @calls  led_open()
+    * @brief  system background threads, only toggle led in this program.
+    * @calls  led_open()
             led_close()
-						osDelay()
+                        osDelay()
   * @called main()
   * @param  None
   * @retval None
 *********************************************************/
 // uint8_t rd_data_buf[5] = {0,0,0,0,0};
 extern void alarm_acl_exe_process(void);
-__IO uint32_t LsiFreq = 40000; 
+__IO uint32_t LsiFreq = 40000;
 
-void fill_pid_para(void)     //ÃÓ≥‰pid ≤Œ ˝(≥ı ºªØªÚ≤Œ ˝–ﬁ∏ƒ)
+void fill_pid_para(void)  //Â°´ÂÖÖpid ÂèÇÊï∞(ÂàùÂßãÂåñÊàñÂèÇÊï∞‰øÆÊîπ)
 {
     pid_change_inst.kc = g_sys.config.algorithm.prop_gain;
     pid_change_inst.ti = g_sys.config.algorithm.integ_time;
-		pid_change_inst.td = g_sys.config.algorithm.diff_time;
+    pid_change_inst.td = g_sys.config.algorithm.diff_time;
     pid_change_inst.ts = g_sys.config.algorithm.samp_time;
-//		if(g_sys.config.general.Cool_Type==Fixed)
-//		{
-//				g_sys.status.Cal_Time=2;	//2S					
-//		}
-//		else
-//		{
-//			g_sys.status.Cal_Time=g_sys.config.algorithm.samp_time;
-//		}	
-//    pid_change_inst.ts = g_sys.status.Cal_Time;
-		pidInit(&pid_inst[EEV1],g_sys.config.algorithm.prop_gain,\
-		g_sys.config.algorithm.integ_time,g_sys.config.algorithm.diff_time,pid_change_inst.ts);
-		pidInit(&pid_inst[EEV2],g_sys.config.algorithm.prop_gain,\
-		g_sys.config.algorithm.integ_time,g_sys.config.algorithm.diff_time,pid_change_inst.ts);
+    //		if(g_sys.config.general.Cool_Type==Fixed)
+    //		{
+    //				g_sys.status.Cal_Time=2;	//2S
+    //		}
+    //		else
+    //		{
+    //			g_sys.status.Cal_Time=g_sys.config.algorithm.samp_time;
+    //		}
+    //    pid_change_inst.ts = g_sys.status.Cal_Time;
+    pidInit(&pid_inst[EEV1], g_sys.config.algorithm.prop_gain, g_sys.config.algorithm.integ_time,
+            g_sys.config.algorithm.diff_time, pid_change_inst.ts);
+    pidInit(&pid_inst[EEV2], g_sys.config.algorithm.prop_gain, g_sys.config.algorithm.integ_time,
+            g_sys.config.algorithm.diff_time, pid_change_inst.ts);
 }
 
 void change_pid_para(void)
 {
-	if((pid_change_inst.kc != g_sys.config.algorithm.prop_gain) || \
-	  (pid_change_inst.ti != g_sys.config.algorithm.integ_time) || \
-	  (pid_change_inst.td != g_sys.config.algorithm.diff_time)  || \
-	  (pid_change_inst.ts != g_sys.config.algorithm.samp_time))
-	{
-		fill_pid_para();
-	}
+    if ((pid_change_inst.kc != g_sys.config.algorithm.prop_gain) ||
+        (pid_change_inst.ti != g_sys.config.algorithm.integ_time) ||
+        (pid_change_inst.td != g_sys.config.algorithm.diff_time) ||
+        (pid_change_inst.ts != g_sys.config.algorithm.samp_time))
+    {
+        fill_pid_para();
+    }
 }
 /**
-  * @brief  WWDG configuration
-  * @param  None
-  * @retval None
-  */
+ * @brief  WWDG configuration
+ * @param  None
+ * @retval None
+ */
 static void iwdg_init(void)
 {
-	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
+    IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
 
-  /* IWDG counter clock: LSI/32 */
-	IWDG_SetPrescaler(IWDG_Prescaler_32);
+    /* IWDG counter clock: LSI/32 */
+    IWDG_SetPrescaler(IWDG_Prescaler_32);
 
-  /* Set counter reload value to obtain 250ms IWDG TimeOut.
-     Counter Reload Value = 250ms/IWDG counter clock period
-                          = 250ms / (LSI/32)
-                          = 0.25s / (LsiFreq/32)
-                          = LsiFreq/(32 * 4)
-                          = LsiFreq/128
-   */
-   IWDG_SetReload(0xc35);			//2.5s
+    /* Set counter reload value to obtain 250ms IWDG TimeOut.
+       Counter Reload Value = 250ms/IWDG counter clock period
+                            = 250ms / (LSI/32)
+                            = 0.25s / (LsiFreq/32)
+                            = LsiFreq/(32 * 4)
+                            = LsiFreq/128
+     */
+    IWDG_SetReload(0xc35);  // 2.5s
 
-  /* Reload IWDG counter */
-  IWDG_ReloadCounter();
+    /* Reload IWDG counter */
+    IWDG_ReloadCounter();
 
-  /* Enable IWDG (the LSI oscillator will be enabled by hardware) */
-  IWDG_Enable();
+    /* Enable IWDG (the LSI oscillator will be enabled by hardware) */
+    IWDG_Enable();
 }
 
-////‘À–– ±º‰
-//static void run_time_process(void)
+////ËøêË°åÊó∂Èó¥
+// static void run_time_process(void)
 //{
 //    extern sys_reg_st g_sys;
 //    extern local_reg_st l_sys;
@@ -90,7 +90,7 @@ static void iwdg_init(void)
 //    uint16_t i;
 //    static uint16_t u16Sec = 0;
 
-//    //π˝¬ÀÕ¯‘À–– ±º‰¿€º∆
+//    //ËøáÊª§ÁΩëËøêË°åÊó∂Èó¥Á¥ØËÆ°
 //    if ((g_sys.status.dout_bitmap[0] & (0x0001 << DO_FAN_BPOS)) != 0)
 //    {
 //        g_sys.status.ComSta.u16Runtime[0][DO_FILLTER_DUMMY_BPOS]++;
@@ -102,10 +102,10 @@ static void iwdg_init(void)
 //    }
 
 //    // get_local_time(&now);
-//    // if ((now % FIXED_SAVETIME) == 0) //√ø15∑÷÷”±£¥Ê“ª¥Œ
+//    // if ((now % FIXED_SAVETIME) == 0) //ÊØè15ÂàÜÈíü‰øùÂ≠ò‰∏ÄÊ¨°
 //    u16Sec++;
 //    // rt_kprintf("adc_value=%d\n", u16Sec);
-//    if ((u16Sec % FIXED_SAVETIME) == 0)  //√ø15∑÷÷”±£¥Ê“ª¥Œ
+//    if ((u16Sec % FIXED_SAVETIME) == 0)  //ÊØè15ÂàÜÈíü‰øùÂ≠ò‰∏ÄÊ¨°
 //    {
 //        u16Sec = 0;
 //        I2C_EE_BufWrite((uint8_t *)&g_sys.status.ComSta.u16Runtime, STS_REG_EE1_ADDR,
@@ -116,54 +116,53 @@ static void iwdg_init(void)
 
 void Systime_cal(void)
 {
+    //ÈÄöËÆØÊ®°Âºè
+    if (g_sys.config.g_u8CfgParameter[CFGCOMMODE])
+    {
+        if (g_sys.status.Com_error[0] <= COMERR_5S * 10)
+        {
+            g_sys.status.Com_error[0]++;
+        }
 
-	//Õ®—∂ƒ£ Ω
-	if(g_sys.config.g_u8CfgParameter[CFGCOMMODE])
-	{
-		if(g_sys.status.Com_error[0]<=COMERR_5S*10)
-		{
-				g_sys.status.Com_error[0]++;	
-		}
-
-		if(g_sys.status.Com_error[1]<=g_sys.config.alarm[ACL_COMMON].alarm_param*10)
-		{
-				g_sys.status.Com_error[1]++;
-		}
-	}
-	else
-	{
-			g_sys.status.Com_error[0]=0;	
-			g_sys.status.Com_error[1]=0;				
-	}
+        if (g_sys.status.Com_error[1] <= g_sys.config.alarm[ACL_COMMON].alarm_param * 10)
+        {
+            g_sys.status.Com_error[1]++;
+        }
+    }
+    else
+    {
+        g_sys.status.Com_error[0] = 0;
+        g_sys.status.Com_error[1] = 0;
+    }
 }
-
 
 void bkg_proc(void const *argument)
 {
-	extern sys_reg_st g_sys;
-	static uint8_t num[2] = {0};
-	led_init();
-  alarm_acl_init();
-	iwdg_init();		//set iwdg period to 2.5s 
-	while(1)
-	{
-		TimeTask();// ±º‰Õ≥º∆
-		alarm_acl_exe_process();
-		FanCtrlStatus();//LED‘À––◊¥Ã¨
-		Systime_cal();
-		if(++num[0] >= 5)
-		{
-			num[0] = 0;
-			IWDG_ReloadCounter();
-//			led_toggle(LED_RUN);
-		}
-		if(++num[1] >= 10)
-		{
-			num[1] = 0;
-			DI_update();
-			daq_gvar_update();		//”Î…Ë∂®÷µΩ¯––±»Ωœ£¨µ√µΩ∆´≤Ó
-//			alarm_acl_exe(0);		
-		}
-		osDelay(BKG_PROC_DLY);
-	}
+    extern sys_reg_st g_sys;
+    static uint8_t num[2] = {0};
+    led_init();
+    alarm_acl_init();
+    iwdg_init();  // set iwdg period to 2.5s
+    while (1)
+    {
+        TimeTask();  //Êó∂Èó¥ÁªüËÆ°
+        alarm_acl_exe_process();
+        FanCtrlStatus();  // LEDËøêË°åÁä∂ÊÄÅ
+        Systime_cal();
+        if (++num[0] >= 5)
+        {
+            num[0] = 0;
+            IWDG_ReloadCounter();
+            //			led_toggle(LED_RUN);
+        }
+        if (++num[1] >= 10)
+        {
+            num[1] = 0;
+            DI_update();
+            daq_gvar_update();  //‰∏éËÆæÂÆöÂÄºËøõË°åÊØîËæÉÔºåÂæóÂà∞ÂÅèÂ∑Æ
+
+            // alarm_acl_exe(0);
+        }
+        osDelay(BKG_PROC_DLY);
+    }
 }
