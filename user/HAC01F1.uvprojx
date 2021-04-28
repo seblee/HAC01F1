@@ -336,7 +336,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER</Define>
+              <Define>USE_STDPERIPH_DRIVER GD32E230_CHIP</Define>
               <Undefine></Undefine>
               <IncludePath>..\user;..\stm32f0;..\drive;..\lib\inc;..\lib\src;..\kits;..\freemodbus-v1.5.0\modbus\functions;..\freemodbus-v1.5.0\modbus\include;..\freemodbus-v1.5.0\modbus\rtu;..\freemodbus-v1.5.0\demo\BARE\port;..\freemodbus-v1.5.0\demo\BARE;.\threads;.\CoreCtrl</IncludePath>
             </VariousControls>

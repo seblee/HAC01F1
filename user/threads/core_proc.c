@@ -7,11 +7,11 @@
   Function List:  	core_proc(void const *argument)
 
   Variable List:  	n.a
-  Revision History:         
+  Revision History:
   Date:           Author:          Modification:
-	2020-07-08      Alair         file create
+    2020-07-08      Alair         file create
 *********************************************************/
-#include "cmsis_os.h"  
+#include "cmsis_os.h"
 #include "adc.h"
 #include "dac.h"
 #include <math.h>
@@ -24,39 +24,40 @@
 #include "acfrequency.h"
 #include "Lib.h"
 
-
-
 /*********************************************************
   * @name   eev_proc
-	* @brief  Sample water quality, humidifier current and water level signals
-	* @calls  adc_init()
+  * @brief  Sample water quality, humidifier current and water level signals
+  * @calls  adc_init()
             calc_conductivity()
             calc_humcurrent()
-						water_level_sts_get()
-						osDelay()            
+                        water_level_sts_get()
+                        osDelay()
   * @called main()
   * @param  *argument : versatile pointer, not used
   * @retval None
 *********************************************************/
 void core_proc(void const *argument)
 {
-	extern sys_reg_st g_sys;
- 	// ÉÏµçÔËÐÐÊ±¼ä²Î¿¼ ÑÓ³ÙÆô¶¯²Î¿¼±êÖ¾
- 	static UINT8 s_u8StartDlyTm = 0;
- 	static UINT8 s_u8StartFlag = FALSE;
-	// »ñÈ¡µ±Ç°Ïà¶ÔÊ±¼ä»ù×¼ µ¥Î»£ºÃë
-	s_u8StartDlyTm = GetCurrSec();
-	while(1)
-	{			
-		ChkACFrequency();
-		//FAN AC supply voltage rectification algorithm:
-		//Calculate percentage of Vo/Vi and related phase angle
-		// ¸´Î»3ÃëºóÖ´ÐÐÏÔÊ¾ºÍ·ç»ú¿ØÖÆ
-//		if((GetSecTimeGap(s_u8StartDlyTm) > 3) || s_u8StartFlag)
-		{
-			s_u8StartFlag = TRUE;		
-			FanCtrlAlgorithm();
-		}
-		osDelay(CORE_PROC_DLY);
-	}
+    extern sys_reg_st g_sys;
+    // ä¸Šç”µè¿è¡Œæ—¶é—´å‚è€ƒ å»¶è¿Ÿå¯åŠ¨å‚è€ƒæ ‡å¿—
+    static UINT8 s_u8StartDlyTm = 0;
+    static UINT8 s_u8StartFlag  = FALSE;
+
+    s_u8StartDlyTm = s_u8StartDlyTm;
+    s_u8StartFlag  = s_u8StartFlag;
+    // èŽ·å–å½“å‰ç›¸å¯¹æ—¶é—´åŸºå‡† å•ä½ï¼šç§’
+    s_u8StartDlyTm = GetCurrSec();
+    while (1)
+    {
+        ChkACFrequency();
+        // FAN AC supply voltage rectification algorithm:
+        // Calculate percentage of Vo/Vi and related phase angle
+        // å¤ä½3ç§’åŽæ‰§è¡Œæ˜¾ç¤ºå’Œé£ŽæœºæŽ§åˆ¶
+        //		if((GetSecTimeGap(s_u8StartDlyTm) > 3) || s_u8StartFlag)
+        {
+            s_u8StartFlag = TRUE;
+            FanCtrlAlgorithm();
+        }
+        osDelay(CORE_PROC_DLY);
+    }
 }
